@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # methods
 import cv2
 import time

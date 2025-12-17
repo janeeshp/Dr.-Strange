@@ -1,9 +1,12 @@
+# -*- coding: utf-8 -*-
 # libraries
 import cv2
 import time
 import mediapipe as mp
 import numpy as np
 import os
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
 from utils import mediapipe_detection, get_center_lh,get_center_rh, points_detection, points_detection_hands
 from argparse import ArgumentParser
 import pickle
@@ -31,6 +34,8 @@ parser.add_argument("-s", "--shield", dest="shield_video", default='effects/shie
 parser.add_argument("-o", "--output", dest="output_mode", default='both',
                     choices=['window', 'virtual', 'both'],
                     help="Output mode: 'window' for OpenCV window only, 'virtual' for virtual camera only, 'both' for both outputs. Default is 'both'")
+parser.add_argument("-r", "--resolution", dest="resolution", default='1280x720',
+                    help="Camera resolution WIDTHxHEIGHT. Default is '1280x720'. Examples: '1920x1080', '640x480'")
 
 args = parser.parse_args()
 # -------------------------------------------------- #
@@ -68,8 +73,16 @@ signal.signal(signal.SIGINT, signal_handler)
 
 current_directory = os.path.dirname(os.path.realpath(__file__)).replace("\\", "/")
 
+# Parse resolution
+res_width, res_height = map(int, args.resolution.split('x'))
+
 # --- start camera ---
 cap = cv2.VideoCapture(args.camera)
+
+# Set camera resolution to higher values for bigger display
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, res_width)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, res_height)
+
 time.sleep(5)
 
 # --- load svm model ---
